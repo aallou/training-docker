@@ -22,11 +22,13 @@ jobs:
             echo "pwd"
             ls
             echo "export VERSION=$(node -p -e "require('./package.json').version")" >> $BASH_ENV
+            env
             echo $VERSION
       - run:
           name: build image
           command: |
             pwd
+            echo $VERSION
             docker --version
             docker build -t $PREFIX_DOCKER_HUB/node-app:$VERSION .
       - run:
