@@ -18,7 +18,11 @@ jobs:
       - checkout # check out the code in the project directory
       - run:
           name: get version from package.json
-          command: echo "export VERSION=$(node -p -e "require('./package.json').version")" >> $BASH_ENV
+          command: |
+            echo "pwd"
+            echo "ls"
+            echo "export VERSION=$(node -p -e "require('./package.json').version")"
+            echo "export VERSION=$(node -p -e "require('./package.json').version")" >> $BASH_ENV
       - run:
           name: build image
           command: docker build -t $PREFIX_DOCKER_HUB/node-app:$VERSION .
