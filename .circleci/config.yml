@@ -16,23 +16,16 @@ jobs:
       PREFIX_DOCKER_HUB: aallou
     steps:
       - checkout # check out the code in the project directory
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: get version from package.json
-          command: |
-            echo "pwd"
-            ls
-            echo "export VERSION=$(node -p -e "require('./package.json').version")" >> $BASH_ENV
-            env
-            echo $VERSION
+          command: echo "export VERSION=$(node -p -e "require('./package.json').version")" >> $BASH_ENV
       - run:
           name: build image
-          command: |
-            pwd
-            echo $VERSION
-            docker --version
-            docker build -t $PREFIX_DOCKER_HUB/node-app:$VERSION .
+          command: docker build -t $PREFIX_DOCKER_HUB/node-app:$VERSION .
       - run:
-          name: push image onto dockerhub
+          name: push image onto docker hub
           command: |
             docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD https://hub.docker.com
             docker push $PREFIX_DOCKER_HUB/node-app:$VERSION
