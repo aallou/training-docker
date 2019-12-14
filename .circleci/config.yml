@@ -1,13 +1,5 @@
 version: 2.1
 
-references:
-  defaults: &defaults
-    environment:
-      TEAM_NAME: ciam
-      APPLICATION_NAME: customer-api
-      VAULT_ADDR: https://vault.factory.adeo.cloud
-      VAULT_NAMESPACE: adeo/habitation-social-platform-community
-
 jobs:
   build:
     docker:
