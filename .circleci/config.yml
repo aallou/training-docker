@@ -1,7 +1,41 @@
 version: 2.1
 
+orbs:
+  gcloud: circleci/gcp-cli@1.0.6
+  k8s: circleci/kubernetes@0.1.0
+
+commands:
+  install:
+    description: "Install `gcloud` and `kubectl` if not already installed."
+    steps:
+      - gcloud/install
+      - k8s/install
+  init:
+    description: "Initialize the `gcloud` CLI."
+    steps:
+      - gcloud/initialize
+  rollout-image:
+    description: "Update a deployment's Docker image."
+    parameters:
+      cluster:
+        description: "The Kubernetes cluster name."
+        type: string
+      deployment:
+        description: "The Kubernetes deployment name."
+        type: string
+      container:
+        description: "The Kubernetes container name."
+        type: string
+      image:
+        description: A name for your docker image
+        type: string
+    steps:
+      - run: |
+          gcloud container clusters get-credentials <<parameters.cluster>>
+          kubectl set image deployment <<parameters.deployment>> <<parameters.container>>=<<parameters.image>>
+
 jobs:
-  build:
+  build_and_push_docker_image:
     docker:
       - image: circleci/node:4.8.2 # the primary container, where your job's commands are run
     environment:
@@ -22,8 +56,46 @@ jobs:
             docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
             docker push $PREFIX_DOCKER_HUB/node-app:$VERSION
 
+  rollout-image:
+    description: "Update cluster with new Docker image."
+    machine: true
+    parameters:
+      cluster:
+        description: "The Kubernetes cluster name."
+        type: string
+      deployment:
+        description: "The Kubernetes deployment name."
+        type: string
+      container:
+        description: "The Kubernetes container name."
+        type: string
+      gcloud-service-key:
+        description: The gcloud service key
+        type: env_var_name
+        default: GCLOUD_SERVICE_KEY
+      google-project-id:
+        description: The Google project ID to connect with via the gcloud CLI
+        type: env_var_name
+        default: GOOGLE_PROJECT_ID
+      google-compute-zone:
+        description: The Google compute zone to connect with via the gcloud CLI
+        type: env_var_name
+        default: GOOGLE_COMPUTE_ZONE
+    steps:
+      - install
+      - init
+      - rollout-image:
+          cluster: "<<parameters.cluster>>"
+          deployment: "<<parameters.deployment>>"
+          container: "<<parameters.container>>"
+          image: $PREFIX_DOCKER_HUB/node-app:$VERSION
+
 workflows:
   version: 2
-  build:
+  build_and_deploy:
     jobs:
-      - build
+      - build_and_push_docker_image
+      - rollout-image:
+        cluster: cluster-k8s-dev
+        deployment: node-app
+        container: node-app
