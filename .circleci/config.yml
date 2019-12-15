@@ -100,4 +100,4 @@ workflows:
           deployment: node-app
           container: node-app
           requires:
-            - docker_release
+            - build_and_push_docker_image
