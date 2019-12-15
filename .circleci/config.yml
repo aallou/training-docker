@@ -96,6 +96,8 @@ workflows:
     jobs:
       - build_and_push_docker_image
       - rollout-image:
-        cluster: cluster-k8s-dev
-        deployment: node-app
-        container: node-app
+          cluster: cluster-k8s-dev
+          deployment: node-app
+          container: node-app
+          requires:
+            - docker_release
