@@ -1,16 +1,26 @@
 {
-  "name": "app-webhook-listener",
+  "name": "node-app",
   "version": "1.0.0",
-  "description": "1- Launch the nodejs app : node server-webhook.js\r 2- Launch ngrok : ngrok http 8081\r 3- Copier l'addresse https dans la config de webhook dans Reach5 : exemple d'adresse https://ba9fc938.ngrok.io/webhook\r 4- Ouvrir l'UI de ngrok pour visualiser les appels : http://127.0.0.1:4040/inspect/http",
-  "main": "server-webhook.js",
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "express": "^4.17.1"
-  },
-  "devDependencies": {},
+  "description": "Example of node app + DockerFile + CicrcleCI + k8s",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aallou/training-docker.git"
+  },
+  "keywords": [
+    "docker",
+    "nodejs",
+    "k8s",
+    "circleci",
+    "training"
+  ],
+  "author": "aallou",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aallou/training-docker/issues"
+  },
+  "homepage": "https://github.com/aallou/training-docker#readme"
 }

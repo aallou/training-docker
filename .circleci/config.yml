@@ -1,0 +1,29 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:4.8.2 # the primary container, where your job's commands are run
+    environment:
+      PREFIX_DOCKER_HUB: aallou
+    steps:
+      - checkout # check out the code in the project directory
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: get version from package.json
+          command: echo "export VERSION=$(node -p -e "require('./package.json').version")" >> $BASH_ENV
+      - run:
+          name: build image
+          command: docker build -t $PREFIX_DOCKER_HUB/node-app:$VERSION .
+      - run:
+          name: push image onto docker hub
+          command: |
+            docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+            docker push $PREFIX_DOCKER_HUB/node-app:$VERSION
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
